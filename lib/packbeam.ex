@@ -47,7 +47,7 @@ defmodule Mix.Tasks.Atom.Packbeam do
     {:ok, file_pid} = File.open(beam_file, [:read])
     Logger.info "Calling IO.read with #{inspect(file_pid)}"
     result = IO.read(file_pid, :all)
-    result
+    file_header <> result
   end
 
   defp write_avm(bytes) do
@@ -81,5 +81,6 @@ defmodule Mix.Tasks.Atom.Packbeam do
     flags = <<0::32>>
     reserved = <<0::32>>
     module_name = Path.basename(path)
+    size <> flags <> reserved <> module_name
   end
 end
