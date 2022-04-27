@@ -7,8 +7,11 @@ defmodule Mix.Tasks.Atom.Packbeam do
 
   @impl Mix.Task
   def run(args) do
-    compile_result = Mix.Tasks.Compile.Elixir.run(args)
-    IO.inspect compile_result
+    # require compile?
+    Logger.info("atom.packbeam called with args:")
+    Logger.info(inspect args)
+    #compile_result = Mix.Tasks.Compile.Elixir.run(args)
+    #IO.inspect compile_result
     beam_files = get_beam_files()
     IO.inspect beam_files
     encoded_beam_files = Enum.map(beam_files, &encode_beam_file/1)
