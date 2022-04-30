@@ -1,6 +1,9 @@
 # Atomix
+![example workflow](https://github.com/taguniversalmachine/atomix/actions/workflows/elixir.yml/badge.svg)
 
-**Compiles project to AtomVM packbeam format**
+**Components for AtomVM**
+
+* LIN Bus
 
 ## Installation
 
