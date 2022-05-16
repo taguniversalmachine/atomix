@@ -20,10 +20,49 @@ defmodule Atomix.Reader do
     csv_files = Enum.map(page_paths, fn path -> File.stream!(path) end)
     decoded_pages = Enum.map(csv_files, fn csv_file -> CSV.decode(csv_file) end)
     decoded_pages_list = List.flatten(Enum.map(decoded_pages, fn page -> Enum.to_list(page) end))
-    labeled_signals = Enum.map(decoded_pages_list, fn ({:ok,  [str_pin, str_signal_in, str_signal_out, str_direct_io, _other]}) ->
-      %{pin: String.to_integer(strip_apostrophes(str_pin)), signal_in: signal_str_to_atom(str_signal_in), signal_out: signal_str_to_atom(str_signal_out), direct_io: str_direct_io == "YES"}
+
+    labeled_signals =
+      Enum.map(decoded_pages_list, fn {:ok,
+                                       [
+                                         str_pin,
+                                         str_signal_in,
+                                         str_signal_out,
+                                         str_direct_io,
+                                         _other
+                                       ]} ->
+        %{
+          pin: String.to_integer(strip_apostrophes(str_pin)),
+          signal_in: signal_str_to_atom(str_signal_in),
+          signal_out: signal_str_to_atom(str_signal_out),
+          direct_io: str_direct_io == "YES"
+        }
+      end)
+
+    labeled_signals
+  end
+
+  def get(:mux_pad_list) do
+    path = "/Users/eflores/src/atomix/lib/docsource/hardware/esp32/4.10 IO_MUX Pad List"
+
+    [Path.join(path, "/p0/table-1.csv")]
+    |> Enum.map(fn path -> File.stream!(path) end)
+    |> Enum.map(fn csv_file -> CSV.decode(csv_file) end)
+    |> Enum.map(fn page -> Enum.to_list(page) end)
+    |> List.flatten()
+    |> Enum.map(fn {:ok, [str_GPIO, str_Pad_Name, str_Function_0, str_Function_1, str_Function_2, str_Function_3, str_Function_4, str_Function_5, str_Reset, str_Notes, _other ]} ->
+      %{
+        GPIO: String.to_integer(oh_to_zero(strip_apostrophes(str_GPIO))),
+        Pad_Name: signal_str_to_atom(str_Pad_Name),
+        function_0: signal_str_to_atom(str_Function_0),
+        function_1: signal_str_to_atom(str_Function_1),
+        function_2: signal_str_to_atom(str_Function_2),
+        function_3: signal_str_to_atom(str_Function_3),
+        function_4: signal_str_to_atom(str_Function_4),
+        function_5: signal_str_to_atom(str_Function_5),
+        reset: String.to_integer(oh_to_zero(strip_apostrophes(str_Reset))),
+        notes: signal_str_to_atom(str_Notes)
+      }
     end)
-   labeled_signals
   end
 
   def confidence(doc) do
@@ -42,6 +81,9 @@ defmodule Atomix.Reader do
   defp strip_apostrophes(str) do
     Regex.replace(~r{[' ]}, str, "")
   end
+
+  defp oh_to_zero("O"), do: "0"
+  defp oh_to_zero(other), do: other
 
   defp signal_to_atom("-") do
     :na
