@@ -1,0 +1,2 @@
+
+docker run -d --name=atomix_test -v atomix_data:/Users/eflores/src/atomix taguniversalmachine/atomix

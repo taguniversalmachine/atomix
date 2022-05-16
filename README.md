@@ -1,9 +1,17 @@
 # Atomix
 ![example workflow](https://github.com/taguniversalmachine/atomix/actions/workflows/elixir.yml/badge.svg)
 
-**Components for AtomVM**
+Electronic Software Components for AtomVM on ESP32
 
-* LIN Bus
+Setup for your environment
+Copy start.sh.example to start.sh and plug in your settings.
+Copy docker-compose.yml.sample to docker-compose.yml and set your local directory
+
+Then: docker-compose up
+
+* LIN Bus Driver
+* OnSemi AMIS-30623 Micro-stepping Motor Driver 
+* RotorVision
 
 ## Installation
 

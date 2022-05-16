@@ -24,7 +24,12 @@ atomix-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
-
+mix.lock
 .idea/
 *.iml
+/docker-compose.yml
+/node_modules/
+package-lock.json
+local_volume/
+start.sh
 

@@ -1,0 +1,125 @@
+
+4 IO_MUX and GPIO Matrix (GPIO, IO_MUX)
+IO pads. For details, please see Section 4.11.
+Pads marked yellow and green have digital functions only.
+Pads marked green can be powered externally or internally via VDD_SDIO (see below).
+4.8.1 VDD_SDIO Power Domain
+VDD_SDIO can source or sink current, allowing this power domain to be powered externally or internally. To power
+VDD_SDIO externally, apply the same power supply of VDD3P3_RTC to the VDD_SDIO pad.
+Without an external power supply, the internal regulator will supply VDD_SDIO. The VDD_SDIO voltage can be
+configured to be either 1.8V or the same as VDD3P3_RTC, depending on the state of the MTDI pad at reset -
+a high level configures 1.8V and a low level configures the voltage to be the same as VDD3P3_RTC. Setting the
+efuse bit determines the default voltage of the VDD_SDIO. In addition, software can change the voltage of the
+VDD_SDIO by configuring register bits.
+4.9
+Peripheral Signal List
+Table 17 contains a list of Peripheral Input/Output signals used by the GPIO Matrix:
+Table 17: GPIO Matrix Peripheral Signals
+Signal
+Input Signal
+Output Signal
+Direct I/O in IO_MUX
+0
+SPICLK_in
+SPICLK_out
+YES
+1
+SPIQ_in
+SPIQ_out
+YES
+2
+SPID_in
+SPID_out
+YES
+3
+SPIHD_in
+SPIHD_out
+YES
+4
+SPIWP_in
+SPIWP_out
+YES
+5
+SPICSO_in
+SPICSO_out
+YES
+6
+SPICS1_in
+SPICS1_out
+-
+7
+SPICS2_in
+SPICS2_out
+-
+8
+HSPICLK_in
+HSPICLK_out
+YES
+9
+HSPIQ_in
+HSPIQ_out
+YES
+10
+HSPID_in
+HSPID_out
+YES
+11
+HSPICSO_in
+HSPICSO_out
+YES
+12
+HSPIHD_in
+HSPIHD_out
+YES
+13
+HSPIWP_in
+HSPIWP_out
+YES
+14
+UORXD_in
+UOTXD_out
+YES
+15
+UOCTS_in
+UORTS_out
+YES
+16
+UODSR_in
+UODTR_out
+-
+17
+U1RXD_in
+U1TXD_out
+YES
+18
+U1CTS_in
+U1RTS_out
+YES
+23
+I2S0O_BCK_in
+I2S0O_BCK_out
+-
+24
+I2S10_BCK_in
+I2S1O_BCK_out
+-
+25
+I2S0O_WS_in
+I2S0O_WS_out
+-
+26
+I2S1O_WS_in
+I2S1O_WS_out
+-
+27
+I2S0I_BCK_in
+I2S0I_BCK_out
+-
+28
+I2S0I_WS_in
+I2S0I_WS_out
+-
+Espressif Systems
+52
+ESP32 TRM (Version 4.6)
+Submit Documentation Feedback
