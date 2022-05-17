@@ -1,0 +1,13 @@
+<%= for peripheral <- @peripherals_4_9 do %>
+ <%= unless peripheral.signal_in == :na do %>
+ #define PERIPHERAL_SIGNAL_<%= peripheral.signal_in%> <%= peripheral.pin %>
+ <% end %>
+ <%= unless peripheral.signal_out == :na do %>
+ #define PERIPHERAL_SIGNAL_<%= peripheral.signal_out%> <%= peripheral.pin %>
+ <% end %>
+<% end %>
+
+<%= for {function, gpio} <- @mux_pad_function_gpio do %>
+#define <%= function %> <%= gpio %>
+<% end %>
+

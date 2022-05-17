@@ -74,7 +74,7 @@ defmodule Atomix.Reader do
         function_4: signal_str_to_atom(str_Function_4),
         function_5: signal_str_to_atom(str_Function_5),
         reset: String.to_integer(oh_to_zero(strip_apostrophes(str_Reset))),
-        notes: signal_str_to_atom(str_Notes)
+        notes: strip_apostrophes(str_Notes)
       }
     end)
   end
@@ -145,13 +145,13 @@ defmodule Atomix.Reader do
     |> Enum.map(fn page -> Enum.to_list(page) end)
     |> List.flatten()
     |> Enum.map(fn {:ok,
-                     [
-                       str_Name,
-                       str_Description,
-                       str_Address,
-                       str_Access,
-                       _other
-                     ]} ->
+                    [
+                      str_Name,
+                      str_Description,
+                      str_Address,
+                      str_Access,
+                      _other
+                    ]} ->
       %{
         Name: strip_apostrophes(str_Name),
         Description: strip_apostrophes(str_Description),
@@ -170,13 +170,13 @@ defmodule Atomix.Reader do
     |> Enum.map(fn page -> Enum.to_list(page) end)
     |> List.flatten()
     |> Enum.map(fn {:ok,
-                     [
-                       str_Name,
-                       str_Description,
-                       str_Address,
-                       str_Access,
-                       _other
-                     ]} ->
+                    [
+                      str_Name,
+                      str_Description,
+                      str_Address,
+                      str_Access,
+                      _other
+                    ]} ->
       %{
         Name: strip_apostrophes(str_Name),
         Description: strip_apostrophes(str_Description),
@@ -221,7 +221,6 @@ defmodule Atomix.Reader do
   defp string_to_access_atom("WO"), do: :WO
   defp string_to_access_atom("r/w"), do: :RW
   defp string_to_access_atom("R/W"), do: :RW
-
 
   defp signal_str_to_atom(signal_str) do
     signal_to_atom(strip_apostrophes(signal_str))

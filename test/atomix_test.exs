@@ -31,4 +31,9 @@ defmodule AtomixTest do
     rtc_io_mux_register_summary_4_12_3 = Atomix.Reader.get(:rtc_io_mux_register_summary_4_12_3)
     assert Enum.count(rtc_io_mux_register_summary_4_12_3) == 35
   end
+
+  test "nifgen" do
+    {header, c_program} = Atomix.Hardware.NIFGen.generate()
+    assert Regex.match?(~r{define}, header)
+  end
 end
