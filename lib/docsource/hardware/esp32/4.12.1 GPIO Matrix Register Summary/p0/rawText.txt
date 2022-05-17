@@ -1,0 +1,153 @@
+
+GPIO_OUT_REG
+GPIO 0-31 output register
+0x3FF44004
+R/W
+GPIO_OUT_W1TS_REG
+GPIO 0-31 output register_W1TS
+0x3FF44008
+wo
+GPIO_OUT_WITC_REG
+GPIO 0-31 output register_W1TC
+0x3FF4400C
+wo
+GPIO_OUT1_REG
+GPIO 32-39 output register
+0x3FF44010
+R/W
+GPIO_OUT1_W1TS_REG
+GPIO 32-39 output bit set register
+0x3FF44014
+wo
+GPIO_OUT1_W1TC_REG
+GPIO 32-39 output bit clear register
+0x3FF44018
+wo
+GPIO_ENABLE_REG
+GPIO 0-31 output enable register
+0x3FF44020
+R/W
+GPIO_ENABLE_W1TS_REC
+GPIO 0-31 output enable register_W1TS
+0x3FF44024
+wo
+GPIO_ENABLE_W1TC_REG
+GPIO 0-31 output enable register_W1TC
+0x3FF44028
+wo
+GPIO_ENABLE1_REG
+GPIO 32-39 output enable register
+0x3FF4402C
+R/W
+GPIO_ENABLE1_W1TS_REG
+GPIO 32-39 output enable bit set register
+0x3FF44030
+wo
+GPIO_ENABLE1_W1TC_REG
+GPIO 32-39 output enable bit clear register
+0x3FF44034
+wo
+GPIO_STRAP_REG
+Bootstrap pin value register
+0x3FF44038
+RO
+GPIO_IN_REG
+GPIO 0-31 input register
+0x3FF4403C
+RO
+GPIO_IN1_REG
+GPIO 32-39 input register
+0x3FF44040
+RO
+GPIO_STATUS_REG
+GPIO 0-31 interrupt status register
+0x3FF44044
+R/W
+GPIO_STATUS_W1TS_REG
+GPIO 0-31 interrupt status register_W1TS
+0x3FF44048
+wo
+GPIO_STATUS_W1TC_REG
+GPIO 0-31 interrupt status register_W1TC
+0x3FF4404C
+wo
+GPIO_STATUS1_REG
+GPIO 32-39 interrupt status register1
+0x3FF44050
+R/W
+GPIO_STATUS1_W1TS_REG
+GPIO 32-39 interrupt status bit set register
+0x3FF44054
+wo
+GPIO_STATUS1_W1TC_REG
+GPIO 32-39 interrupt status bit clear register
+0x3FF44058
+WO
+GPIO_ACPU_INT_REG
+GPIO 0-31 APP_CPU interrupt status
+0x3FF44060
+RO
+GPIO 0-31 APP_CPU non-maskable interrupt
+GPIO_ACPU_NMI_INT_REG
+0x3FF44064
+RO
+status
+GPIO_PCPU_INT_REG
+GPIO 0-31 PRO_CPU interrupt status
+0x3FF44068
+RO
+GPIO 0-31 PRO_CPU non-maskable interrupt
+GPIO_PCPU_NMI_INT_REC
+0x3FF4406C
+RO
+status
+GPIO_ACPU_INT1_REG
+GPIO 32-39 APP_CPU interrupt status
+0x3FF44074
+RO
+GPIO 32-39 APP_CPU non-maskable interrupt
+GPIO_ACPU_NMI_INT1_REG
+0x3FF44078
+RO
+status
+GPIO_PCPU_INT1_REG
+GPIO 32-39 PRO_CPU interrupt status
+0x3FF4407C
+RO
+GPIO 32-39 PRO_CPU non-maskable interrupt
+GPIO_PCPU_NMI_INT1_REC
+0x3FF44080
+RO
+status
+GPIO_PINO_REG
+Configuration for GPIO pin 0
+0x3FF44088
+R/W
+GPIO_PIN1_REG
+Configuration for GPIO pin 1
+0x3FF4408C
+R/W
+GPIO_PIN2_REG
+Configuration for GPIO pin 2
+0x3FF44090
+R/W
+GPIO_PIN38_REG
+Configuration for GPIO pin 38
+0x3FF44120
+R/W
+GPIO_PIN39_REG
+Configuration for GPIO pin 39
+0x3FF44124
+R/W
+GPIO_FUNCO_IN_SEL_CFG_RE
+Peripheral function o input selection register
+0x3FF44130
+R/W
+GPIO_FUNC1_IN_SEL_CFG_RE(
+Peripheral function 1 input selection register
+0x3FF44134
+R/W
+GPIO_FUNC254_IN_SEL_CFG_REG
+Peripheral function 254 input selection register
+0x3FF44528
+R/W

@@ -1,0 +1,137 @@
+
+IO_MUX_PIN_CTRL
+Clock output configuration register
+0x3FF49000
+R/W
+IO_MUX_GPIO36_REG
+Configuration register for pad GPIO36
+0x3FF49004
+R/W
+IO_MUX_GPIO37_REG
+Configuration register for pad GPIO37
+0x3FF49008
+R/W
+IO_MUX_GPIO38_REG
+Configuration register for pad GPIO38
+0x3FF4900C
+R/W
+IO_MUX_GPIO39_REG
+Configuration register for pad GPIO39
+0x3FF49010
+R/W
+IO_MUX_GPIO34_REG
+Configuration register for pad GPIO34
+0x3FF49014
+R/W
+IO_MUX_GPIO35_REG
+Configuration register for pad GPIO35
+0x3FF49018
+R/W
+IO_MUX_GPIO32_REG
+Configuration register for pad GPIO32
+0x3FF4901C
+R/W
+IO_MUX_GPIO33_REG
+Configuration register for pad GPIO33
+0x3FF49020
+R/W
+IO_MUX_GPIO25_REG
+Configuration register for pad GPIO25
+0x3FF49024
+R/W
+IO_MUX_GPIO26_REG
+Configuration register for pad GPIO26
+0x3FF49028
+R/W
+IO_MUX_GPIO27_REG
+Configuration register for pad GPIO27
+0x3FF4902C
+R/W
+IO_MUX_MTMS_REG
+Configuration register for pad MTMS
+0x3FF49030
+R/W
+IO_MUX_MTDI_REG
+Configuration register for pad MTDI
+0x3FF49034
+R/W
+IO_MUX_MTCK_REG
+Configuration register for pad MTCK
+0x3FF49038
+R/W
+IO_MUX_MTDO_REG
+Configuration register for pad MTDO
+0x3FF4903C
+R/W
+IO_MUX_GPIO2_REG
+Configuration register for pad GPIO2
+0x3FF49040
+R/W
+IO_MUX_GPIOO_REG
+Configuration register for pad GPIOO
+0x3FF49044
+R/W
+IO_MUX_GPIO4_REG
+Configuration register for pad GPIO4
+0x3FF49048
+R/W
+IO_MUX_GPIO16_REG
+Configuration register for pad GPIO16
+0x3FF4904C
+R/W
+IO_MUX_GPIO17_REG
+Configuration register for pad GPIO17
+0x3FF49050
+R/W
+IO_MUX_SD_DATA2_REG
+Configuration register for pad SD_DATA2
+0x3FF49054
+R/W
+IO_MUX_SD_DATA3_REG
+Configuration register for pad SD_DATA3
+0x3FF49058
+R/W
+IO_MUX_SD_CMD_REG
+Configuration register for pad SD_CMD
+0x3FF4905C
+R/W
+O_MUX_SD_CLK_REG
+Configuration register for pad SD_CLK
+0x3FF49060
+R/W
+IO_MUX_SD_DATAO_REG
+Configuration register for pad SD_DATAO
+0x3FF49064
+R/W
+IO_MUX_SD_DATA1_REG
+Configuration register for pad SD_DATA1
+0x3FF49068
+R/W
+IO_MUX_GPIO5_REG
+Configuration register for pad GPIO5
+0x3FF4906C
+R/W
+IO_MUX_GPIO18_REG
+Configuration register for pad GPIO18
+0x3FF49070
+R/W
+IO_MUX_GPIO19_REG
+Configuration register for pad GPIO19
+0x3FF49074
+R/W
+IO_MUX_GPIO20_REG
+Configuration register for pad GPIO20
+0x3FF49078
+R/W
+IO_MUX_GPIO21_REG
+Configuration register for pad GPIO21
+0x3FF4907C
+R/W
+IO_MUX_GPIO22_REG
+Configuration register for pad GPIO22
+0x3FF49080
+R/W
+IO_MUX_UORXD_REG
+Configuration register for pad UORXD
+0x3FF49084
+R/W

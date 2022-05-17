@@ -1,0 +1,21 @@
+
+GPIO_FUNC255_IN_SEL_CFG_REG
+Peripheral function 255 input selection register
+0x3FF4452C
+R/W
+GPIO_FUNCO_OUT_SEL_CFG_REG
+Peripheral output selection for GPIO 0
+0x3FF44530
+R/W
+GPIO_FUNC1_OUT_SEL_CFG_REG
+Peripheral output selection for GPIO 1
+0x3FF44534
+R/W
+GPIO_FUNC38_OUT_SEL_CFG_REG
+Peripheral output selection for GPIO 38
+0x3FF445C8
+R/W
+GPIO_FUNC39_OUT_SEL_CFG_REG
+Peripheral output selection for GPIO 39
+0x3FF445CC
+R/W

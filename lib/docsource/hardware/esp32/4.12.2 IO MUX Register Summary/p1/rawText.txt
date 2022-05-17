@@ -1,0 +1,13 @@
+
+D_MUX_UOTXD_REG
+Configuration register for pad UOTXD
+0x3FF49088
+R/W
+D_MUX_GPIO23_REG
+Configuration register for pad GPIO23
+0x3FF4908C
+R/W
+D_MUX_GPIO24_REG
+Configuration register for pad GPIO24
+0x3FF49090
+R/W

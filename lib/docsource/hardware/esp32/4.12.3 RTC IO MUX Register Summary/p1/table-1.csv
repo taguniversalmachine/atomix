@@ -1,0 +1,6 @@
+"'RTCIO_HALL_SENS_REG ","'Hall sensor configuration ","'0x3FF48478 ","'R/W ",
+"'RTCIO_SENSOR_PADS_REG ","'Sensor pads configuration register ","'0x3FF4847C ","'R/W ",
+"'RTCIO_ADC_PAD_REG ","'ADC configuration register ","'0x3FF48480 ","'R/W ",
+"'RTCIO_PAD_DAC1_REC ","'DAC1 configuration register ","'0x3FF48484 ","'R/W ",
+"'RTCIO_PAD_DAC2_REG ","'DAC2 configuration register ","'0x3FF48488 ","'R/W ",
+"'RTCIO_XTAL_32K_PAD_REG ","'32KHz crystal pads configuration register ","'0x3FF4848C ","'R/W ",
