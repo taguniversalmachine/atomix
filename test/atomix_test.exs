@@ -3,9 +3,6 @@ defmodule AtomixTest do
   doctest Atomix
   require Logger
 
-  test "greets the world" do
-    assert Atomix.hello() == :world
-  end
 
   test "starts master task" do
     {:ok, master} = GenServer.start_link(Atomix.Lin.Master, %{})
@@ -30,10 +27,14 @@ defmodule AtomixTest do
 
     rtc_io_mux_register_summary_4_12_3 = Atomix.Reader.get(:rtc_io_mux_register_summary_4_12_3)
     assert Enum.count(rtc_io_mux_register_summary_4_12_3) == 35
+
+    peripherals_1_3_5 = Atomix.Reader.get(:peripherals_1_3_5)
+    assert Enum.count(peripherals_1_3_5) == 54
+    assert Enum.at(peripherals_1_3_5, 0)[:Target] == "DPortRegister"
   end
 
-  test "nifgen" do
-    {header, c_program} = Atomix.Hardware.NIFGen.generate()
-    assert Regex.match?(~r{define}, header)
+  test "NIF Generator" do
+    {:ok, c_program} = Atomix.Hardware.NIFGen.generate(:gpio)
+    assert Regex.match?(~r{#include <erl_nif.h>}, c_program)
   end
 end

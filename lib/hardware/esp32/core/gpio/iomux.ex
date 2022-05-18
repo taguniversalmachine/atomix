@@ -1,4 +1,4 @@
-defmodule Atomix.Esp32.Core.IOMux do
+defmodule Atomix.Esp32.Core.GPIO.IOMux do
   @input_index [0..18, 23..36, 39..58, 61..90, 95..124, 140..155, 164..181, 190..195, 198..206]
 
   @doc """

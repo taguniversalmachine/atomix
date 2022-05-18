@@ -3,15 +3,20 @@
 
 Electronic Software Components for AtomVM on ESP32
 
-Setup for your environment
-Copy start.sh.example to start.sh and plug in your settings.
-Copy docker-compose.yml.sample to docker-compose.yml and set your local directory
+### Configuration
+Edit the config file for the environment you are working in.
+Here is where you configure the I/O, Timers, Interrupts and other hardware peripherals.
 
-Then: docker-compose up
+Run the driver generator 
 
-* LIN Bus Driver
-* OnSemi AMIS-30623 Micro-stepping Motor Driver 
-* RotorVision
+`mix atomix.gen.driver `
+
+This will create nif files in _build/nif 
+As well as the Elixir interface to match.
+
+Included modules:
+
+* GPIO
 
 ## Installation
 

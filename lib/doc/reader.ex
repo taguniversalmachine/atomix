@@ -2,20 +2,6 @@ defmodule Atomix.Reader do
   require Logger
   require CSV
 
-  def get(:esp32) do
-    path =
-      Path.absname(
-        "lib/docsource/hardware/esp32/4.9 Peripheral Signal List/analyzeDocResponse.json"
-      )
-
-    json_file = File.read!(path)
-    doc = Jason.decode!(json_file)
-    IO.inspect(doc)
-    blocks = doc["Blocks"]
-    IO.inspect(blocks)
-    %{doc: doc, blocks: blocks}
-  end
-
   def get(:peripherals_4_9) do
     path = Path.absname("lib/docsource/hardware/esp32/4.9 Peripheral Signal List")
 
@@ -128,7 +114,7 @@ defmodule Atomix.Reader do
                       _other
                     ]} ->
       %{
-        Name: strip_apostrophes(str_Name),
+        Name: String.to_atom(strip_apostrophes(str_Name)),
         Description: strip_apostrophes(str_Description),
         Address: strip_apostrophes(str_Address),
         Access: string_to_access_atom(strip_apostrophes(str_Access))
@@ -182,6 +168,35 @@ defmodule Atomix.Reader do
         Description: strip_apostrophes(str_Description),
         Address: strip_apostrophes(str_Address),
         Access: string_to_access_atom(strip_apostrophes(str_Access))
+      }
+    end)
+  end
+
+  def get(:peripherals_1_3_5) do
+    path = Path.absname("lib/docsource/hardware/esp32/1.3.5 Peripherals")
+
+    Enum.map(0..1, fn page -> Path.join(path, "/p#{page}/table-1.csv") end)
+    |> Enum.map(fn path -> File.stream!(path) end)
+    |> Enum.map(fn csv_file -> CSV.decode(csv_file) end)
+    |> Enum.map(fn page -> Enum.to_list(page) end)
+    |> List.flatten()
+    |> Enum.map(fn {:ok,
+                     [
+                       str_BusType,
+                       str_LowAddress,
+                       str_HighAddress,
+                       str_Size,
+                       str_Target,
+                       str_Comment ,
+                       _other
+                     ]} ->
+      %{
+        BusType: strip_apostrophes(str_BusType),
+        LowAddress: strip_apostrophes(str_LowAddress),
+        HighAddress: strip_apostrophes(str_HighAddress),
+        Size: strip_apostrophes(str_Size),
+        Target: strip_apostrophes(str_Target),
+        Comment: strip_apostrophes(str_Comment)
       }
     end)
   end
