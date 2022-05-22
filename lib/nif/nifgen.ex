@@ -19,7 +19,6 @@ defmodule Atomix.Hardware.NIFGen do
     {:ok, c_program}
   end
 
-
   def all_mux_pad_functions() do
     Atomix.Reader.get(:mux_pad_list_4_10)
     |> Enum.map(fn pad ->
@@ -72,10 +71,17 @@ defmodule Atomix.Hardware.NIFGen do
   end
 
   def peripheral_register_addresses() do
-     peripheral_registers = Atomix.Reader.get(:peripherals_1_3_5)
-     addresses = Enum.map(peripheral_registers, fn register ->
-        %{register: register, low_address: register["Low Address"], high_address: register["High Address"]}
-     end)
-     addresses
+    peripheral_registers = Atomix.Reader.get(:peripherals_1_3_5)
+
+    addresses =
+      Enum.map(peripheral_registers, fn register ->
+        %{
+          register: register,
+          low_address: register["Low Address"],
+          high_address: register["High Address"]
+        }
+      end)
+
+    addresses
   end
 end

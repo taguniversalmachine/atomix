@@ -5,7 +5,7 @@ defmodule Atomix.Esp32.Core.GPIO.GPIO do
   @onload :init
 
   def init do
-    :erl.load_nif("./atomix_gpio.nif", 0)
+    :erlang.load_nif("./atomix_gpio.nif", 0)
     :ok
   end
 
@@ -27,6 +27,4 @@ defmodule Atomix.Esp32.Core.GPIO.GPIO do
 
   def route_peripheral_signal_to_pad(signal_number, pad_number) do
   end
-
-
 end

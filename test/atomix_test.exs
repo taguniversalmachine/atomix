@@ -3,7 +3,6 @@ defmodule AtomixTest do
   doctest Atomix
   require Logger
 
-
   test "starts master task" do
     {:ok, master} = GenServer.start_link(Atomix.Lin.Master, %{})
     assert Process.alive?(master)
@@ -29,7 +28,7 @@ defmodule AtomixTest do
     assert Enum.count(rtc_io_mux_register_summary_4_12_3) == 35
 
     peripherals_1_3_5 = Atomix.Reader.get(:peripherals_1_3_5)
-    assert Enum.count(peripherals_1_3_5) == 54
+    assert Enum.count(peripherals_1_3_5) == 39
     assert Enum.at(peripherals_1_3_5, 0)[:Target] == "DPortRegister"
   end
 

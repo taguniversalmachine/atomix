@@ -180,26 +180,32 @@ defmodule Atomix.Reader do
     |> Enum.map(fn csv_file -> CSV.decode(csv_file) end)
     |> Enum.map(fn page -> Enum.to_list(page) end)
     |> List.flatten()
+    |> Enum.reject(fn {:ok, [_, _, _, _, strTarget, _, _]} ->
+      strip_apostrophes(strTarget) == "Reserved"
+    end)
     |> Enum.map(fn {:ok,
-                     [
-                       str_BusType,
-                       str_LowAddress,
-                       str_HighAddress,
-                       str_Size,
-                       str_Target,
-                       str_Comment ,
-                       _other
-                     ]} ->
+                    [
+                      str_BusType,
+                      str_LowAddress,
+                      str_HighAddress,
+                      str_Size,
+                      str_Target,
+                      str_Comment,
+                      _other
+                    ]} ->
       %{
         BusType: strip_apostrophes(str_BusType),
         LowAddress: strip_apostrophes(str_LowAddress),
         HighAddress: strip_apostrophes(str_HighAddress),
         Size: strip_apostrophes(str_Size),
-        Target: strip_apostrophes(str_Target),
+        Target: fixTarget(strip_apostrophes(str_Target)),
         Comment: strip_apostrophes(str_Comment)
       }
     end)
   end
+
+  defp fixTarget("10MUX"), do: "IOMUX"
+  defp fixTarget(other), do: other
 
   def confidence(doc) do
     confidence_vals = Enum.map(doc, fn x -> x["Confidence"] end)
