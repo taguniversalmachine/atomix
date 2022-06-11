@@ -1,0 +1,129 @@
+
+configures the SPII/O to a cer-
+SPI_pad_config_q
+5
+6
+-
+tain pad
+configures the SPI I/O to a cer-
+SPI_pad_config_d
+5
+6
+-
+tain pad
+configures the SPI I/O to a cer-
+SPI_pad_config_csO
+5
+6
+-
+tain pad
+governs flash encryption/
+flash_crypt_config
+4
+10
+3
+decryption
+coding_scheme*
+2
+10
+3
+controls the eFuse Controller
+disables the ROM BASIC
+console_debug_disable
+1
+15
+-
+debug console fallback
+mode when set to 1
+determines the status of
+abstract_done_0
+1
+12
+-
+Secure Boot
+determines the status of
+abstract_done_1
+1
+13
+-
+Secure Boot
+disables access to the
+JTAG controllers so as to
+JTAG_disable
+1
+14
+-
+effectively disable external
+use of JTAG
+governs flash encryption/
+download_dis_encrypt
+1
+15
+-
+decryption
+governs flash encryption/
+download_dis_decrypt
+1
+15
+-
+decryption
+disables cache when boot
+download_dis_cache
+1
+15
+-
+mode is the Download Mode
+determines whether BLOCK3
+key_status
+1
+10
+3
+is deployed for user purposes
+governs flash encryption/
+BLOCK1*
+256/192/128
+7
+0
+decryption
+BLOCK2*
+256/192/128
+8
+1
+key for Secure Boot
+BLOCK3*
+256/192/128
+9
+2
+key for user purposes
+disable_app_cpu
+1
+3
+-
+disables APP CPU
+disable_bt
+1
+3
+-
+disables Bluetooth
+pkg_version
+4
+3
+-
+packaging version
+disable_cache
+1
+3
+-
+disables cache
+CK8M Frequency
+8
+4
+-
+RTC8M_CLK frequency
+stores the voltage level for
+vol_level_hp_inv
+2
+3
+-
+CPU to run at 240 MHz, or for
+flash/PSRAM to run at 80 MHz

@@ -1,0 +1,59 @@
+
+efuse_wr_disable
+16
+1
+-
+controls the eFuse Controller
+efuse_rd_disable
+4
+0
+-
+controls the eFuse Controller
+governs the flash encryption/
+flash_crypt_cnt
+7
+2
+-
+decryption
+WIFI_MAC_Address
+56
+3
+-
+Wi-Fi MAC address and CRC
+configures the SPII/O to a cer-
+SPI_pad_config_hd
+5
+3
+-
+tain pad
+XPD_SDIO_REG
+1
+5
+-
+powers up the flash regulator
+configures the flash regulator
+SDIO_TIEH
+1
+5
+-
+voltage: set to 1 for 3.3 V
+and set to 0 for 1.8 V
+determines whether
+XPD_SDIO_REG
+sdio_force
+1
+5
+-
+and SDIO_TIEH can
+control the flash regulator
+BLK3_part_reserve
+2
+10
+3
+controls the eFuse controller
+configures the SPII/O to a cer-
+SPI_pad_config_clk
+5
+6
+-
+tain pad

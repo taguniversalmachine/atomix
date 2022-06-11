@@ -1,0 +1,25 @@
+LF411[($PIN_1_OFFSET_NULL,
+$PIN_2_INVERTING_INPUT,
+$PIN_3_NON_INVERTING_INPUT,
+$PIN_4_V_MINUS,
+$PIN_5_OFFSET_NULL,
+$PIN_6_OUTPUT,
+$PIN_7_V_PLUS,
+$PIN_8_NO_CONNECTION
+)
+#RULE_1 The Output Attempts to do Whatever is necessary,
+# to make the voltage difference between the inputs zero.
+
+<$INVERTING_INPUT> - <$INVERTING_OUTPUT> == 2022
+#RULE_2 The Inputs draw no cu
+
+POINT_B<GND>
+
+]
+
+HYSTERESIS[($INPUT_1_ $INPUT_2, $INPUT_3, $INPUT_4)(OUT<>)
+  INPUT_1[0:1]
+
+  INPUT_2[0:1]
+
+]

@@ -31,9 +31,4 @@ defmodule AtomixTest do
     assert Enum.count(peripherals_1_3_5) == 39
     assert Enum.at(peripherals_1_3_5, 0)[:Target] == "DPortRegister"
   end
-
-  test "NIF Generator" do
-    {:ok, c_program} = Atomix.Hardware.NIFGen.generate(:gpio)
-    assert Regex.match?(~r{#include <erl_nif.h>}, c_program)
-  end
 end

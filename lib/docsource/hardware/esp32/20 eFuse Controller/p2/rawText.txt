@@ -1,0 +1,15 @@
+
+stores the difference between
+dig_vol_l6
+4
+11
+the digital regulator voltage at
+level 6 and 1.2V.
+permanently disables Down-
+load Boot mode when set to
+uart_download_dis
+1
+2
+-
+1. Valid only for ESP32 ECO
+V3.

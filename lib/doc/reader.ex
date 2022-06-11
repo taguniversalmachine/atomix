@@ -1,8 +1,37 @@
 defmodule Atomix.Reader do
   require Logger
-  require CSV
+  import NimbleParsec
+  alias Atomix.Invocation.Parser
+
+  switch = "switch"
+  pin = "pin"
+  component_name = string("component")
+
+  switch_pinout =
+    string(switch)
+    |> concat(component_name)
+    |> concat(string("pin"))
+
+  defparsec(:switch_pinout, switch_pinout)
+
+  # Peripherasl 4 9
+  pin_number = string("0")
+  signal = string("SPICLK_in")
+  signal2 = string("SPICLK_out")
+  direct_io = string("YES")
+
+  defparsec(
+    :peripherals,
+    ignore(string("#"))
+    |> ignore(string(","))
+    |> concat(pin_number)
+    |> ignore(string(","))
+    |> concat(signal)
+    |> concat(direct_io)
+  )
 
   def get(:peripherals_4_9) do
+    # "'0 ","'SPICLK_in ","'SPICLK_out ","'YES ",
     path = Path.absname("lib/docsource/hardware/esp32/4.9 Peripheral Signal List")
 
     Enum.map(1..6, fn page -> Path.join(path, "/p#{page}/table-1.csv") end)
@@ -202,6 +231,52 @@ defmodule Atomix.Reader do
         Comment: strip_apostrophes(str_Comment)
       }
     end)
+  end
+
+  def get(:efuse_controller_20) do
+    path = Path.absname("lib/docsource/hardware/esp32/20 eFuse Controller/p0
+")
+
+    Enum.map(0..1, fn page -> Path.join(path, "/p#{page}/table-1.csv") end)
+    |> Enum.map(fn path -> File.stream!(path) end)
+    |> Enum.map(fn csv_file -> CSV.decode(csv_file) end)
+    |> Enum.map(fn page -> Enum.to_list(page) end)
+    |> List.flatten()
+    |> Enum.reject(fn {:ok, [_, _, _, _, strTarget, _, _]} ->
+      strip_apostrophes(strTarget) == "Reserved"
+    end)
+    |> Enum.map(fn {:ok,
+                    [
+                      str_efuse_wr_disable,
+                      str_efuse_rd_disable,
+                      str_lash_crypt_cnt,
+                      str_WIFI_MAC_Address,
+                      str_SPI_pad_config_hd,
+                      str_XPD_SDIO_REG,
+                      str_DIO_TIEH,
+                      str_sdio_force,
+                      str_BLK3_part_reserve,
+                      str_SPI_pad_config_clk
+                    ]} ->
+      %{
+        EfuseWriteDisable: strip_apostrophes(str_efuse_wr_disable),
+        EfuseReadDisable: strip_apostrophes(str_efuse_rd_disable),
+        LashCryptCount: strip_apostrophes(str_lash_crypt_cnt),
+        WIFIMACAddress: strip_apostrophes(str_WIFI_MAC_Address),
+        SPIPadConfigHD: strip_apostrophes(str_SPI_pad_config_hd),
+        SPDSDIO: strip_apostrophes(str_XPD_SDIO_REG),
+        XPD_SDIO_REG: strip_apostrophes(str_XPD_SDIO_REG),
+        DIO_TIEH: strip_apostrophes(str_DIO_TIEH),
+        SDIO_FORCE: strip_apostrophes(str_sdio_force),
+        BLK3_Part_Reserve: strip_apostrophes(str_BLK3_part_reserve),
+        SPI_pad_config_clk: strip_apostrophes(str_SPI_pad_config_clk)
+      }
+    end)
+  end
+
+  def get(part) do
+    path = Path.absname("lib/docsource/hardware/#{part}/#{part}.definition")
+    Parser.definition(File.read!(path))
   end
 
   defp fixTarget("10MUX"), do: "IOMUX"

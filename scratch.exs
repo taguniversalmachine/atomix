@@ -1,25 +1,27 @@
-fb = fn (0,0,_) -> "FizzBuzz"
-           (_,0,_) -> "Fizz"
-(_,_,c) -> c
+fb = fn
+  0, 0, _ -> "FizzBuzz"
+  _, 0, _ -> "Fizz"
+  _, _, c -> c
 end
 
 fc = fn n ->
-  fb.(rem(n,3), rem(n,5), n)
+  fb.(rem(n, 3), rem(n, 5), n)
 end
 
-result = for x <- 1..7 do
-  fc.(x+9)
-end
+result =
+  for x <- 1..7 do
+    fc.(x + 9)
+  end
 
-IO.inspect result
+IO.inspect(result)
 
-prefix = fn (first) -> (fn other -> "#{first} #{other}" end) end
+prefix = fn first -> fn other -> "#{first} #{other}" end end
 
 mrs = prefix.("Mrs")
 
-IO.inspect mrs.("Smith")
+IO.inspect(mrs.("Smith"))
 
-IO.inspect prefix.("Elixir").("Rocks")
+IO.inspect(prefix.("Elixir").("Rocks"))
 
 defmodule MyList do
   def len([]), do: 0
@@ -38,7 +40,8 @@ end
 defmodule CountDown do
   def sleep(seconds) do
     receive do
-      after seconds*1000 -> nil
+    after
+      seconds * 1000 -> nil
     end
   end
 
@@ -47,30 +50,35 @@ defmodule CountDown do
   end
 
   def say(text) do
-    spawn fn -> :os.cmd('say #{text}') end
+    spawn(fn -> :os.cmd('say #{text}') end)
   end
 
   def timer() do
     Stream.resource(
-      fn -> # the number of seconds to start of next minute
-        {_h, _m, s} = :erlang.time
+      # the number of seconds to start of next minute
+      fn ->
+        {_h, _m, s} = :erlang.time()
         60 - s - 1
       end,
-      fn # wait for the next second, then return its cowuntdown
-        0 -> {:halt, 0}
-        count -> sleep(1)
-              {[inspect(count)], count - 1}
+      # wait for the next second, then return its cowuntdown
+      fn
+        0 ->
+          {:halt, 0}
+
+        count ->
+          sleep(1)
+          {[inspect(count)], count - 1}
       end,
       fn _ -> nil end
     )
   end
 
   def next_fun(acc) do
-     if true do
-       {3, acc}
-       else
-       {:halt, acc}
-     end
+    if true do
+      {3, acc}
+    else
+      {:halt, acc}
+    end
   end
 
   def after_fun(acc) do
@@ -78,6 +86,28 @@ defmodule CountDown do
   end
 
   def count(seconds) do
+  end
+end
 
+defmodule Pow do
+  def id(i) when is_float(i), do: i
+  def pow(_n, 0), do: 1
+
+  def pow(n, m) do
+    n * pow(n, m - 1)
+  end
+end
+
+defmodule MakeBits do
+  def append_ascii(ascii_bitstring, [ascii_bit]) do
+    bitstring = for <<cp <- ascii_bitstring>>, do: <<char2bit(cp)::1>>, into: <<>>
+    <<bitstring::bitstring, char2bit(ascii_bit)::1>>
+  end
+  def char2bit(?0), do: 0
+  def char2bit(?1), do: 1
+
+  def test() do
+    incoming_ascii_string = "10101"
+    append_ascii(incoming_ascii_string, '1') == <<1::1, 0::1, 1::1, 0::1, 1::1, 1::1>>
   end
 end

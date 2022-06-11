@@ -23,6 +23,7 @@ defmodule Atomix.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:exatomvm, path: "/Users/eflores/src/ExAtomVM"},
       {:jason, "~> 1.3"},
       {:finch, "~> 0.12.0"},
       {:csv, "~> 2.4.1"},
