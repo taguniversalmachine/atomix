@@ -1,7 +1,7 @@
 defmodule InvocationTest do
   use ExUnit.Case
   alias Atomix.Invocation.Parser
-  @moduletag timeout: 10
+  @moduletag timeout: 100
 
   test "12.3.2a Definition name" do
     definition_name_str = "definition_nameABC"
@@ -213,7 +213,8 @@ defmodule InvocationTest do
                  destination_place: {:name, "CARRY"}
                ],
                unnamed_source_place: [
-                 {:conditional_invocation, [destination_place: {:name, "X"}, destination_place: {:name, "Y"}]}
+                 {:conditional_invocation,
+                  [destination_place: {:name, "X"}, destination_place: {:name, "Y"}]}
                ],
                place_of_resolution: [
                  {:constant_definitions, [constant_name: "00", constant_content: "1"]}
@@ -318,21 +319,23 @@ defmodule InvocationTest do
   end
 
   test "12.3b Further abbreviated expression of a single return to place of invocation" do
-    definition_str = "AND[(X<>Y<>)$a$b():]"
+    definition_str = "AND[(X<>Y<>)$a$b():00[1]]"
     {:ok, definition, _, _, _, _} = Parser.definition(definition_str)
 
     assert definition == [
              definition: [
                definition_name: ["AND"],
-               source_list: [source_place: [name: "X"], source_place: [name: "Y"]],
-               conditional_invocation: [
-                 destination_list: [
-                   destination_place: {:name, "a"},
-                   destination_place: {:name, "b"}
-                 ]
+               source_list: [
+                 source_place: [name: "X"],
+                 source_place: [name: "Y"]
                ],
-               place_of_resolution: [],
-               constant_definitions: []
+               conditional_invocation: [
+                 {:destination_place, {:name, "a"}},
+                 {:destination_place, {:name, "b"}}
+               ],
+               place_of_resolution: [
+                 {:constant_definitions, [constant_name: "00", constant_content: "1"]}
+               ]
              ]
            ]
   end
@@ -388,30 +391,31 @@ defmodule InvocationTest do
   end
 
   test "12.5 AND function with value transform rule definitions" do
-    definition_str = "ANDA[(A<>B<>)<$C$D()> : 00[0] 01[0] 10[0] 11[1]]"
+    definition_str = "ANDA[(A<>B<>)<$C$D()>:00[0] 01[0] 10[0] 11[1]]"
     {:ok, definition, _, _, _, _} = Parser.definition(definition_str)
 
     assert definition == [
-             definition_name: "ANDA",
-             source_list: [source_place: [name: "A"], source_place: [name: "B"]],
-             unnamed_source_place: [
-               conditional_invocation: [
-                 destination_list: [
+             definition: [
+               definition_name: ["ANDA"],
+               source_list: [source_place: [name: "A"], source_place: [name: "B"]],
+               unnamed_source_place: [
+                 conditional_invocation: [
                    destination_place: {:name, "C"},
                    destination_place: {:name, "D"}
                  ]
+               ],
+               place_of_resolution: [
+                 constant_definitions: [
+                   constant_name: "00",
+                   constant_content: "0",
+                   constant_name: "01",
+                   constant_content: "0",
+                   constant_name: "10",
+                   constant_content: "0",
+                   constant_name: "11",
+                   constant_content: "1"
+                 ]
                ]
-             ],
-             place_of_resolution: [],
-             constant_definitions: [
-               constant_name: "00",
-               constant_content: "0",
-               constant_name: "01",
-               constant_content: "0",
-               constant_name: "10",
-               constant_content: "0",
-               constant_name: "11",
-               constant_content: "1"
              ]
            ]
   end
@@ -445,12 +449,36 @@ defmodule InvocationTest do
   end
 
   test "12.6 Fan-out steering" do
-    definition_str = "fanout[(select<>in<>)({$out1 $out2}) $select(): A[out1<$in>] B[out2<$in>]]"
+    definition_str = "fanout[(select<>in<>)({$out1 $out2}) $select():A[out1<$in>] B[out2<$in>]]"
 
     {:ok, definition, _, _, _, _} = Parser.definition(definition_str)
-    assert definition == "GGG"
+
+    assert definition == [
+             definition: [
+               definition_name: ["fanout"],
+               source_list: [source_place: [name: "select"], source_place: [name: "in"]],
+               destination_list: [
+                 conditional_input: [
+                   destination_list: [
+                     destination_place: {:name, "out1"},
+                     destination_place: {:name, "out2"}
+                   ]
+                 ]
+               ],
+               conditional_invocation: [destination_place: {:name, "select"}],
+               place_of_resolution: [
+                 constant_definitions: [
+                   constant_name: "A",
+                   source_place: [name: "out1", content: [destination_place: {:name, "in"}]],
+                   constant_name: "B",
+                   source_place: [name: "out2", content: [destination_place: {:name, "in"}]]
+                 ]
+               ]
+             ]
+           ]
   end
 
+  @tag timeout: 100
   test "12.7 Comma-delimited constants" do
     invocation_str = "ProcX($A $B, NT, EW)()"
     {:ok, invocation, _, _, _, _} = Parser.invocation(invocation_str)

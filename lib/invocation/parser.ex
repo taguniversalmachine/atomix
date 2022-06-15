@@ -26,9 +26,17 @@ defmodule Atomix.Invocation.Parser do
 
   defparsec(:name, name)
 
+  content =
+    choice([parsec(:constant_content), parsec(:destination_place)])
+    |> tag(:content)
+
+  defparsec(:content, content)
+
   source_place =
     name
-    |> ignore(string("<>"))
+    |> ignore(string("<"))
+    |> optional(parsec(:content))
+    |> ignore(string(">"))
     |> ignore(repeat(string(" ")))
     |> tag(:source_place)
 
@@ -83,7 +91,9 @@ defmodule Atomix.Invocation.Parser do
         destination_place,
         parsec(:invocation),
         parsec(:constant_content),
-        #   parsec(:conditional_invocation),
+        parsec(:mutually_exclusive_completeness),
+        # ?
+        parsec(:conditional_input),
         ignore(parsec(:whitespace)),
         ignore(parsec(:comma))
       ]),
@@ -115,11 +125,13 @@ defmodule Atomix.Invocation.Parser do
   constant_definition =
     constant_name
     |> ignore(string("["))
-    |> concat(constant_content)
+    |> choice([parsec(:constant_content), parsec(:source_place)])
     |> ignore(string("]"))
 
+  defparsec(:constant_definition, constant_definition)
+
   constant_definitions =
-    times(choice([constant_definition, ignore(parsec(:whitespace))]), min: 1)
+    times(choice([parsec(:constant_definition), ignore(parsec(:whitespace))]), min: 1)
     |> tag(:constant_definitions)
 
   defparsec(:constant_definitions, constant_definitions)
@@ -164,6 +176,14 @@ defmodule Atomix.Invocation.Parser do
 
   defparsec(:mutually_exclusive_completeness, mutually_exclusive_completeness)
 
+  conditional_input =
+    ignore(string("{"))
+    |> concat(destination_list)
+    |> ignore(string("}"))
+    |> tag(:conditional_input)
+
+  defparsec(:conditional_input, conditional_input)
+
   arbitration =
     ignore(string("{{"))
     |> concat(destination_list)
@@ -183,7 +203,6 @@ defmodule Atomix.Invocation.Parser do
       unnamed_source_place,
       ignore(parsec(:whitespace))
     ])
-    |> debug()
     |> tag(:place_of_resolution)
 
   defparsec(:place_of_resolution, place_of_resolution)
