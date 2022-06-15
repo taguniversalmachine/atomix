@@ -244,7 +244,7 @@ defmodule Atomix.Invocation.Parser do
 
   defparsec(
     :expression,
-    times(choice([parsec(:definition), parsec(:invocation)]), min: 2)
+    times(choice([parsec(:definition), parsec(:invocation), ignore(parsec(:whitespace))]), min: 2)
     |> tag(:expression)
   )
 
