@@ -512,4 +512,54 @@ defmodule InvocationTest do
               ]}
            ]
   end
+
+  test "12.11 Controlled fan-out expression" do
+    invocation_str = "fanout($select $input)({output1<> output2<> output3<> output4<>"
+    {:ok, invocation, _, _, _, _} = Parser.invocation(invocation_str)
+
+    assert invocation == [
+             invocation: [
+               invocation_name: "fanout",
+               destination_list: [
+                 destination_place: {:name, "select"},
+                 destination_place: {:name, "input"}
+               ]
+             ]
+           ]
+
+    definition_str =
+      "fanout[(select<> in<>)({$out1 $out2 $out3 $out4})$select():A[out1<$in>] B[out2<$in>] C[out3<$in>] D[out4<$in>]]"
+
+    {:ok, definition, _, _, _, _} = Parser.definition(definition_str)
+
+    assert definition == [
+             definition: [
+               definition_name: ["fanout"],
+               source_list: [source_place: [name: "select"], source_place: [name: "in"]],
+               destination_list: [
+                 conditional_input: [
+                   destination_list: [
+                     destination_place: {:name, "out1"},
+                     destination_place: {:name, "out2"},
+                     destination_place: {:name, "out3"},
+                     destination_place: {:name, "out4"}
+                   ]
+                 ]
+               ],
+               conditional_invocation: [destination_place: {:name, "select"}],
+               place_of_resolution: [
+                 constant_definitions: [
+                   constant_name: "A",
+                   source_place: [name: "out1", content: [destination_place: {:name, "in"}]],
+                   constant_name: "B",
+                   source_place: [name: "out2", content: [destination_place: {:name, "in"}]],
+                   constant_name: "C",
+                   source_place: [name: "out3", content: [destination_place: {:name, "in"}]],
+                   constant_name: "D",
+                   source_place: [name: "out4", content: [destination_place: {:name, "in"}]]
+                 ]
+               ]
+             ]
+           ]
+  end
 end

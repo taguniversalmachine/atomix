@@ -2,6 +2,7 @@ defmodule Atomix.Format.MP3Test do
   use ExUnit.Case
   require Atomix.Format.MP3
 
+  @tag :skip
   test "opens MP3" do
     path = Path.absname("test/format_test/Minimal Techno Music (8D Bass Boosted).mp3")
     mp3 = Atomix.Format.MP3.open(path)
