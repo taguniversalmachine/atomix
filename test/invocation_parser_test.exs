@@ -604,4 +604,38 @@ defmodule InvocationTest do
              ]
            ]
   end
+
+  test "12.12 Serial Bus" do
+    invocation_str = "fanin($selin {$in1 $in2})(serialmid<>)"
+    {:ok, invocation, _, _, _, _} = Parser.invocation(invocation_str)
+
+    assert invocation == [
+             invocation: [
+               invocation_name: "fanin",
+               destination_list: [
+                 destination_place: {:name, "selin"},
+                 conditional_input: [
+                   destination_list: [
+                     destination_place: {:name, "in1"},
+                     destination_place: {:name, "in2"}
+                   ]
+                 ]
+               ],
+               source_list: [source_place: [name: "serialmid"]]
+             ]
+           ]
+
+    invocation_str_2 = "fanout($selout $serialmid)({out1<> out2<> out3<> out4<>})"
+    {:ok, invocation_2, _, _, _, _} = Parser.invocation(invocation_str_2)
+
+    assert invocation_2 == [
+             invocation: [
+               invocation_name: "fanout",
+               destination_list: [
+                 destination_place: {:name, "selout"},
+                 destination_place: {:name, "serialmid"}
+               ]
+             ]
+           ]
+  end
 end

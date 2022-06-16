@@ -224,6 +224,7 @@ defmodule Atomix.Invocation.Parser do
   definition =
     definition_name
     |> ignore(string("["))
+    |> debug()
     |> concat(source_list_parens)
     |> optional(destination_list_parens)
     |> choice([
