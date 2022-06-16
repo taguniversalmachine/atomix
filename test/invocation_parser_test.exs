@@ -115,6 +115,23 @@ defmodule InvocationTest do
     assert expression == [
              destination_list: [destination_place: {:name, "A"}, destination_place: {:name, "B"}]
            ]
+
+    destination_list_with_conditional_input_str = "$A {$B $C}"
+
+    {:ok, destination_list_with_conditional_input, _, _, _, _} =
+      Parser.destination_list(destination_list_with_conditional_input_str)
+
+    assert destination_list_with_conditional_input == [
+             destination_list: [
+               destination_place: {:name, "A"},
+               conditional_input: [
+                 destination_list: [
+                   destination_place: {:name, "B"},
+                   destination_place: {:name, "C"}
+                 ]
+               ]
+             ]
+           ]
   end
 
   test "12.3.2 Destination list in parens" do
@@ -635,6 +652,110 @@ defmodule InvocationTest do
                  destination_place: {:name, "selout"},
                  destination_place: {:name, "serialmid"}
                ]
+             ]
+           ]
+  end
+
+  test "12.13 Parallel Bus" do
+    invocation_str_1 = "fanout($seloutA $srcA)({outA1<> outA2<> outA3<> outA4<> outA5<>})"
+    {:ok, invocation_1, _, _, _, _} = Parser.invocation(invocation_str_1)
+
+    assert invocation_1 == [
+             invocation: [
+               invocation_name: "fanout",
+               destination_list: [
+                 destination_place: {:name, "seloutA"},
+                 destination_place: {:name, "srcA"}
+               ]
+             ]
+           ]
+
+    invocation_str_2 = "fanout($seloutB $srcB)(outB1 outB2<> outB3<> outB4<> outB5<>"
+    {:ok, invocation_2, _, _, _, _} = Parser.invocation(invocation_str_2)
+
+    assert invocation_2 == [
+             invocation: [
+               invocation_name: "fanout",
+               destination_list: [
+                 destination_place: {:name, "seloutB"},
+                 destination_place: {:name, "srcB"}
+               ]
+             ]
+           ]
+
+    invocation_str_3 = "fan_in($selin1 {$outA1 $outB1})(dest1<>)"
+    {:ok, invocation_3, _, _, _, _} = Parser.invocation(invocation_str_3)
+
+    assert invocation_3 == [
+             invocation: [
+               invocation_name: "fan_in",
+               destination_list: [
+                 destination_place: {:name, "selin1"},
+                 conditional_input: [
+                   destination_list: [
+                     destination_place: {:name, "outA1"},
+                     destination_place: {:name, "outB1"}
+                   ]
+                 ]
+               ],
+               source_list: [source_place: [name: "dest1"]]
+             ]
+           ]
+
+    invocation_str_4 = "fanin($selin2 {$outA2 $outB2})(dest2<>)"
+    {:ok, invocation_4, _, _, _, _} = Parser.invocation(invocation_str_4)
+
+    assert invocation_4 == [
+             invocation: [
+               invocation_name: "fanin",
+               destination_list: [
+                 destination_place: {:name, "selin2"},
+                 conditional_input: [
+                   destination_list: [
+                     destination_place: {:name, "outA2"},
+                     destination_place: {:name, "outB2"}
+                   ]
+                 ]
+               ],
+               source_list: [source_place: [name: "dest2"]]
+             ]
+           ]
+
+    invocation_str_5 = "fanin($selin3 {$outA3 $outB3})(dest3<>)"
+    {:ok, invocation_5, _, _, _, _} = Parser.invocation(invocation_str_5)
+
+    assert invocation_5 == [
+             invocation: [
+               invocation_name: "fanin",
+               destination_list: [
+                 destination_place: {:name, "selin3"},
+                 conditional_input: [
+                   destination_list: [
+                     destination_place: {:name, "outA3"},
+                     destination_place: {:name, "outB3"}
+                   ]
+                 ]
+               ],
+               source_list: [source_place: [name: "dest3"]]
+             ]
+           ]
+
+    invocation_str_6 = "fanin($selin4 {$outA4 $outB4})(dest4<>)"
+    {:ok, invocation_6, _, _, _, _} = Parser.invocation(invocation_str_6)
+
+    assert invocation_6 == [
+             invocation: [
+               invocation_name: "fanin",
+               destination_list: [
+                 destination_place: {:name, "selin4"},
+                 conditional_input: [
+                   destination_list: [
+                     destination_place: {:name, "outA4"},
+                     destination_place: {:name, "outB4"}
+                   ]
+                 ]
+               ],
+               source_list: [source_place: [name: "dest4"]]
              ]
            ]
   end
