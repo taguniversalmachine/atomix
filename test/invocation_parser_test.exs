@@ -758,5 +758,24 @@ defmodule InvocationTest do
                source_list: [source_place: [name: "dest4"]]
              ]
            ]
+
+    invocation_str_7 = "fanin($selin5 {$outA5 $outB5})(dest5<>)"
+    {:ok, invocation_7, _, _, _, _} = Parser.invocation(invocation_str_7)
+
+    assert invocation_7 == [
+             invocation: [
+               invocation_name: "fanin",
+               destination_list: [
+                 destination_place: {:name, "selin5"},
+                 conditional_input: [
+                   destination_list: [
+                     destination_place: {:name, "outA5"},
+                     destination_place: {:name, "outB5"}
+                   ]
+                 ]
+               ],
+               source_list: [source_place: [name: "dest5"]]
+             ]
+           ]
   end
 end
