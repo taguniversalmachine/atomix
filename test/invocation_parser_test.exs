@@ -6,7 +6,7 @@ defmodule InvocationTest do
   test "12.3.2a Definition name" do
     definition_name_str = "definition_nameABC"
     {:ok, definition_name, _, _, _, _} = Parser.definition_name(definition_name_str)
-    assert definition_name == [definition_name: ["definition_nameABC"]]
+    assert definition_name == [definition_name: "definition_nameABC"]
   end
 
   test "12.3.2b Definition" do
@@ -15,7 +15,7 @@ defmodule InvocationTest do
 
     assert definition == [
              definition: [
-               definition_name: ["definition_name"],
+               definition_name: "definition_name",
                source_list: [source_place: [name: "a"], source_place: [name: "b"]],
                destination_list: [
                  destination_place: {:name, "d"},
@@ -219,7 +219,7 @@ defmodule InvocationTest do
 
     assert definition == [
              definition: [
-               definition_name: ["FULLADD"],
+               definition_name: "FULLADD",
                source_list: [
                  source_place: [name: "X"],
                  source_place: [name: "Y"],
@@ -262,7 +262,7 @@ defmodule InvocationTest do
 
     assert definition == [
              definition: [
-               definition_name: ["AND"],
+               definition_name: "AND",
                source_list: [
                  source_place: [name: "X"],
                  source_place: [name: "Y"],
@@ -341,7 +341,7 @@ defmodule InvocationTest do
 
     assert definition == [
              definition: [
-               definition_name: ["AND"],
+               definition_name: "AND",
                source_list: [
                  source_place: [name: "X"],
                  source_place: [name: "Y"]
@@ -413,7 +413,7 @@ defmodule InvocationTest do
 
     assert definition == [
              definition: [
-               definition_name: ["ANDA"],
+               definition_name: "ANDA",
                source_list: [source_place: [name: "A"], source_place: [name: "B"]],
                unnamed_source_place: [
                  conditional_invocation: [
@@ -472,7 +472,7 @@ defmodule InvocationTest do
 
     assert definition == [
              definition: [
-               definition_name: ["fanout"],
+               definition_name: "fanout",
                source_list: [source_place: [name: "select"], source_place: [name: "in"]],
                destination_list: [
                  conditional_input: [
@@ -514,7 +514,46 @@ defmodule InvocationTest do
            ]
   end
 
-  test "12.14a arbitrated places" do
+  test "12.14 Arbitrated Places" do
+    invocation_str_1 = "Arbiter({{$place1 $place2}})(next<>)"
+    {:ok, invocation_1, _, _, _, _} = Parser.invocation(invocation_str_1)
+
+    assert invocation_1 == [
+             invocation: [
+               invocation_name: "Arbiter",
+               destination_list: [
+                 conditional_input: [
+                   destination_list: [
+                     conditional_input: [
+                       destination_list: [
+                         destination_place: {:name, "place1"},
+                         destination_place: {:name, "place2"}
+                       ]
+                     ]
+                   ]
+                 ]
+               ],
+               source_list: [source_place: [name: "next"]]
+             ]
+           ]
+  end
+
+  test "12.14b Arbitrated Places" do
+    definition_str_1 = "Arbiter[(placeB<>)($pass) pass<$placeB>:]"
+    {:ok, definition_1, _, _, _, _} = Parser.definition(definition_str_1)
+
+    assert definition_1 == [
+             definition: [
+               definition_name: "Arbiter",
+               source_list: [source_place: [name: "placeB"]],
+               destination_list: [destination_place: {:name, "pass"}],
+               source_place: [name: "pass", content: [destination_place: {:name, "placeB"}]],
+               place_of_resolution: []
+             ]
+           ]
+  end
+
+  test "12.14c Arbitrated Places" do
     arbitration_expr_str = "{{$place1 $place2}}"
 
     {:ok, expression, _, _, _, _} = Parser.arbitration(arbitration_expr_str)
@@ -551,7 +590,7 @@ defmodule InvocationTest do
 
     assert definition == [
              definition: [
-               definition_name: ["fanout"],
+               definition_name: "fanout",
                source_list: [source_place: [name: "select"], source_place: [name: "in"]],
                destination_list: [
                  conditional_input: [
@@ -585,7 +624,7 @@ defmodule InvocationTest do
     assert expression == [
              expression: [
                definition: [
-                 definition_name: ["fanout"],
+                 definition_name: "fanout",
                  source_list: [source_place: [name: "select"], source_place: [name: "in"]],
                  destination_list: [
                    conditional_input: [

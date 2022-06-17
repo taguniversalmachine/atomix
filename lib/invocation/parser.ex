@@ -139,7 +139,7 @@ defmodule Atomix.Invocation.Parser do
   definition_name =
     ascii_string([?A..?Z, ?a..?z, ?_], min: 1)
     |> optional(ascii_string([?A..?Z, ?a..?z, ?0..?9], min: 1))
-    |> tag(:definition_name)
+    |> unwrap_and_tag(:definition_name)
 
   defparsec(:definition_name, definition_name)
 
@@ -201,7 +201,8 @@ defmodule Atomix.Invocation.Parser do
       times(parsec(:invocation), min: 1),
       times(constant_definitions, min: 1),
       unnamed_source_place,
-      ignore(parsec(:whitespace))
+      ignore(parsec(:whitespace)),
+      empty()
     ])
     |> tag(:place_of_resolution)
 
@@ -224,11 +225,11 @@ defmodule Atomix.Invocation.Parser do
   definition =
     definition_name
     |> ignore(string("["))
-    |> debug()
     |> concat(source_list_parens)
     |> optional(destination_list_parens)
     |> choice([
       unnamed_source_place,
+      source_place,
       conditional_invocation,
       arbitration,
       unnamed_source_place_with_conditional_invocation
