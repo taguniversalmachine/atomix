@@ -83,7 +83,7 @@ defmodule InvocationTest do
            ]
   end
 
-  test "12.3.2 Destination list" do
+  test "12.3.2.1 Destination list" do
     destination_list_str = "$A $B"
     {:ok, expression, _, _, _, _} = Parser.destination_list(destination_list_str)
 
@@ -124,12 +124,9 @@ defmodule InvocationTest do
     assert destination_list_with_conditional_input == [
              destination_list: [
                destination_place: {:name, "A"},
-               conditional_input: [
-                 destination_list: [
-                   destination_place: {:name, "B"},
-                   destination_place: {:name, "C"}
-                 ]
-               ]
+               mutually_exclusive_completeness:
+                 {:destination_list,
+                  [destination_place: {:name, "B"}, destination_place: {:name, "C"}]}
              ]
            ]
   end
@@ -193,6 +190,61 @@ defmodule InvocationTest do
     arbitration_str = "{{$A $B}}"
     {:ok, expression, _, _, _, _} = Parser.arbitration(arbitration_str)
     assert expression = []
+  end
+
+  test "12.14a Arbitrated Places" do
+    invocation_str_1 = "Arbiter({{$place1 $place2}})(next<>)"
+    {:ok, invocation_1, _, _, _, _} = Parser.invocation(invocation_str_1)
+
+    assert invocation_1 == [
+             invocation: [
+               invocation_name: "Arbiter",
+               destination_list: [
+                 mutually_exclusive_completeness:
+                   {:source_list,
+                    [
+                      mutually_exclusive_completeness:
+                        {:destination_list,
+                         [
+                           destination_place: {:name, "place1"},
+                           destination_place: {:name, "place2"}
+                         ]}
+                    ]}
+               ],
+               source_list: [source_place: [name: "next"]]
+             ]
+           ]
+  end
+
+  test "12.14b Arbitrated Places" do
+    definition_str_1 = "Arbiter[(placeB<>)($pass) pass<$placeB>:]"
+    {:ok, definition_1, _, _, _, _} = Parser.definition(definition_str_1)
+
+    assert definition_1 == [
+             definition: [
+               definition_name: "Arbiter",
+               source_list: [source_place: [name: "placeB"]],
+               destination_list: [destination_place: {:name, "pass"}],
+               source_place: [name: "pass", content: [destination_place: {:name, "placeB"}]],
+               place_of_resolution: []
+             ]
+           ]
+  end
+
+  test "12.14c Arbitrated Places" do
+    arbitration_expr_str = "{{$place1 $place2}}"
+
+    {:ok, expression, _, _, _, _} = Parser.arbitration(arbitration_expr_str)
+
+    assert expression == [
+             {:arbitration,
+              [
+                destination_list: [
+                  destination_place: {:name, "place1"},
+                  destination_place: {:name, "place2"}
+                ]
+              ]}
+           ]
   end
 
   test "12.1a Unnamed Source Place in an Invocation" do
@@ -459,9 +511,8 @@ defmodule InvocationTest do
 
     assert mutually_exclusive_completeness ==
              [
-               mutually_exclusive_completeness: [
-                 source_list: [source_place: [name: "B0"], source_place: [name: "B1"]]
-               ]
+               mutually_exclusive_completeness:
+                 {:source_list, [source_place: [name: "B0"], source_place: [name: "B1"]]}
              ]
   end
 
@@ -475,12 +526,9 @@ defmodule InvocationTest do
                definition_name: "fanout",
                source_list: [source_place: [name: "select"], source_place: [name: "in"]],
                destination_list: [
-                 conditional_input: [
-                   destination_list: [
-                     destination_place: {:name, "out1"},
-                     destination_place: {:name, "out2"}
-                   ]
-                 ]
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [destination_place: {:name, "out1"}, destination_place: {:name, "out2"}]}
                ],
                conditional_invocation: [destination_place: {:name, "select"}],
                place_of_resolution: [
@@ -508,64 +556,8 @@ defmodule InvocationTest do
                  destination_place: {:name, "B"},
                  constant_content: "NT",
                  constant_content: "EW"
-               ],
-               source_list: []
+               ]
              ]
-           ]
-  end
-
-  test "12.14 Arbitrated Places" do
-    invocation_str_1 = "Arbiter({{$place1 $place2}})(next<>)"
-    {:ok, invocation_1, _, _, _, _} = Parser.invocation(invocation_str_1)
-
-    assert invocation_1 == [
-             invocation: [
-               invocation_name: "Arbiter",
-               destination_list: [
-                 conditional_input: [
-                   destination_list: [
-                     conditional_input: [
-                       destination_list: [
-                         destination_place: {:name, "place1"},
-                         destination_place: {:name, "place2"}
-                       ]
-                     ]
-                   ]
-                 ]
-               ],
-               source_list: [source_place: [name: "next"]]
-             ]
-           ]
-  end
-
-  test "12.14b Arbitrated Places" do
-    definition_str_1 = "Arbiter[(placeB<>)($pass) pass<$placeB>:]"
-    {:ok, definition_1, _, _, _, _} = Parser.definition(definition_str_1)
-
-    assert definition_1 == [
-             definition: [
-               definition_name: "Arbiter",
-               source_list: [source_place: [name: "placeB"]],
-               destination_list: [destination_place: {:name, "pass"}],
-               source_place: [name: "pass", content: [destination_place: {:name, "placeB"}]],
-               place_of_resolution: []
-             ]
-           ]
-  end
-
-  test "12.14c Arbitrated Places" do
-    arbitration_expr_str = "{{$place1 $place2}}"
-
-    {:ok, expression, _, _, _, _} = Parser.arbitration(arbitration_expr_str)
-
-    assert expression == [
-             {:arbitration,
-              [
-                destination_list: [
-                  destination_place: {:name, "place1"},
-                  destination_place: {:name, "place2"}
-                ]
-              ]}
            ]
   end
 
@@ -593,14 +585,14 @@ defmodule InvocationTest do
                definition_name: "fanout",
                source_list: [source_place: [name: "select"], source_place: [name: "in"]],
                destination_list: [
-                 conditional_input: [
-                   destination_list: [
-                     destination_place: {:name, "out1"},
-                     destination_place: {:name, "out2"},
-                     destination_place: {:name, "out3"},
-                     destination_place: {:name, "out4"}
-                   ]
-                 ]
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [
+                      destination_place: {:name, "out1"},
+                      destination_place: {:name, "out2"},
+                      destination_place: {:name, "out3"},
+                      destination_place: {:name, "out4"}
+                    ]}
                ],
                conditional_invocation: [destination_place: {:name, "select"}],
                place_of_resolution: [
@@ -627,14 +619,14 @@ defmodule InvocationTest do
                  definition_name: "fanout",
                  source_list: [source_place: [name: "select"], source_place: [name: "in"]],
                  destination_list: [
-                   conditional_input: [
-                     destination_list: [
-                       destination_place: {:name, "out1"},
-                       destination_place: {:name, "out2"},
-                       destination_place: {:name, "out3"},
-                       destination_place: {:name, "out4"}
-                     ]
-                   ]
+                   mutually_exclusive_completeness:
+                     {:destination_list,
+                      [
+                        destination_place: {:name, "out1"},
+                        destination_place: {:name, "out2"},
+                        destination_place: {:name, "out3"},
+                        destination_place: {:name, "out4"}
+                      ]}
                  ],
                  conditional_invocation: [destination_place: {:name, "select"}],
                  place_of_resolution: [
@@ -670,12 +662,9 @@ defmodule InvocationTest do
                invocation_name: "fanin",
                destination_list: [
                  destination_place: {:name, "selin"},
-                 conditional_input: [
-                   destination_list: [
-                     destination_place: {:name, "in1"},
-                     destination_place: {:name, "in2"}
-                   ]
-                 ]
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [destination_place: {:name, "in1"}, destination_place: {:name, "in2"}]}
                ],
                source_list: [source_place: [name: "serialmid"]]
              ]
@@ -686,11 +675,22 @@ defmodule InvocationTest do
 
     assert invocation_2 == [
              invocation: [
-               invocation_name: "fanout",
-               destination_list: [
-                 destination_place: {:name, "selout"},
-                 destination_place: {:name, "serialmid"}
-               ]
+               {:invocation_name, "fanout"},
+               {
+                 :destination_list,
+                 [destination_place: {:name, "selout"}, destination_place: {:name, "serialmid"}]
+               },
+               {:source_list,
+                [
+                  mutually_exclusive_completeness:
+                    {:source_list,
+                     [
+                       source_place: [name: "out1"],
+                       source_place: [name: "out2"],
+                       source_place: [name: "out3"],
+                       source_place: [name: "out4"]
+                     ]}
+                ]}
              ]
            ]
   end
@@ -701,11 +701,26 @@ defmodule InvocationTest do
 
     assert invocation_1 == [
              invocation: [
-               invocation_name: "fanout",
-               destination_list: [
-                 destination_place: {:name, "seloutA"},
-                 destination_place: {:name, "srcA"}
-               ]
+               {:invocation_name, "fanout"},
+               {
+                 :destination_list,
+                 [
+                   destination_place: {:name, "seloutA"},
+                   destination_place: {:name, "srcA"}
+                 ]
+               },
+               {:source_list,
+                [
+                  mutually_exclusive_completeness:
+                    {:source_list,
+                     [
+                       source_place: [name: "outA1"],
+                       source_place: [name: "outA2"],
+                       source_place: [name: "outA3"],
+                       source_place: [name: "outA4"],
+                       source_place: [name: "outA5"]
+                     ]}
+                ]}
              ]
            ]
 
@@ -730,12 +745,9 @@ defmodule InvocationTest do
                invocation_name: "fan_in",
                destination_list: [
                  destination_place: {:name, "selin1"},
-                 conditional_input: [
-                   destination_list: [
-                     destination_place: {:name, "outA1"},
-                     destination_place: {:name, "outB1"}
-                   ]
-                 ]
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [destination_place: {:name, "outA1"}, destination_place: {:name, "outB1"}]}
                ],
                source_list: [source_place: [name: "dest1"]]
              ]
@@ -749,12 +761,9 @@ defmodule InvocationTest do
                invocation_name: "fanin",
                destination_list: [
                  destination_place: {:name, "selin2"},
-                 conditional_input: [
-                   destination_list: [
-                     destination_place: {:name, "outA2"},
-                     destination_place: {:name, "outB2"}
-                   ]
-                 ]
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [destination_place: {:name, "outA2"}, destination_place: {:name, "outB2"}]}
                ],
                source_list: [source_place: [name: "dest2"]]
              ]
@@ -768,12 +777,9 @@ defmodule InvocationTest do
                invocation_name: "fanin",
                destination_list: [
                  destination_place: {:name, "selin3"},
-                 conditional_input: [
-                   destination_list: [
-                     destination_place: {:name, "outA3"},
-                     destination_place: {:name, "outB3"}
-                   ]
-                 ]
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [destination_place: {:name, "outA3"}, destination_place: {:name, "outB3"}]}
                ],
                source_list: [source_place: [name: "dest3"]]
              ]
@@ -787,12 +793,9 @@ defmodule InvocationTest do
                invocation_name: "fanin",
                destination_list: [
                  destination_place: {:name, "selin4"},
-                 conditional_input: [
-                   destination_list: [
-                     destination_place: {:name, "outA4"},
-                     destination_place: {:name, "outB4"}
-                   ]
-                 ]
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [destination_place: {:name, "outA4"}, destination_place: {:name, "outB4"}]}
                ],
                source_list: [source_place: [name: "dest4"]]
              ]
@@ -806,15 +809,52 @@ defmodule InvocationTest do
                invocation_name: "fanin",
                destination_list: [
                  destination_place: {:name, "selin5"},
-                 conditional_input: [
-                   destination_list: [
-                     destination_place: {:name, "outA5"},
-                     destination_place: {:name, "outB5"}
-                   ]
-                 ]
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [destination_place: {:name, "outA5"}, destination_place: {:name, "outB5"}]}
                ],
                source_list: [source_place: [name: "dest5"]]
              ]
            ]
+  end
+
+  # not sure about this yet but looks like it takes the source and
+  # returns the result to the place of invocaton
+  test "12.15aa Invocation with a single input and single output" do
+    invocation_str = "SL(A<>)"
+    {:ok, invocation, _, _, _, _} = Parser.invocation(invocation_str)
+    assert invocation == [invocatioon: [invocation_name: "SL", source_place: [name: "A"]]]
+  end
+
+  test "12.15a Mutually exclusive completeness with invocations" do
+    completeness_str =
+      "{SL(A<>) NOT(A<>) AND(A<> B<>) OR(A<> B<>) XOR(A<> B<>) ADD(A<> B<> carryin<>)}"
+
+    {:ok, completeness, _, _, _, _} = Parser.mutually_exclusive_completeness(completeness_str)
+    assert completeness == "XXXX"
+  end
+
+  test "12.15b Defintion of ALU with complex completeness relationships" do
+    invocation_str = "ALU(ADD, $A $B $carryin)(output<> carryout<>)"
+    {:ok, alu_invocation, _, _, _, _} = Parser.invocation(invocation_str)
+
+    assert alu_invocation == [
+             invocation: [
+               invocation_name: "ALU",
+               destination_list: [
+                 constant_content: "ADD",
+                 destination_place: {:name, "A"},
+                 destination_place: {:name, "B"},
+                 destination_place: {:name, "carryin"}
+               ],
+               source_list: [source_place: [name: "output"], source_place: [name: "carryout"]]
+             ]
+           ]
+
+    definition_str =
+      "ALU[(command<> {SL(A<>) NOT(A<>) AND(A<> B<>) OR(A<> B<>) XOR(A<> B<>) ADD(A<> B<> carryin<>)}) ({SL($result) SR($result) NOT($result) OR($result) AND($result) XOR($result) ADD($result $carryout)}):]"
+
+    {:ok, alu_definition, _, _, _, _} = Parser.definition(definition_str)
+    assert alu_definition == "XX"
   end
 end

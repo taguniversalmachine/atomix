@@ -1,7 +1,11 @@
 # Atomix
-![example workflow](https://github.com/taguniversalmachine/atomix/actions/workflows/elixir.yml/badge.svg)
+![atomix workflow](https://github.com/taguniversalmachine/atomix/actions/workflows/elixir.yml/badge.svg)
+![Atomix](atomix.png)
 
-Digital Software Components for AtomVM on ESP32
+Electornic Software Components for AtomVM on ESP32
+
+Build for your machine
+> mix atomix build
 
 ### Configuration
 Edit the config file for the environment you are working in.

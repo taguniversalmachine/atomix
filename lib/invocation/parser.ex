@@ -62,10 +62,11 @@ defmodule Atomix.Invocation.Parser do
         source_place,
         unnamed_source_place,
         unnamed_empty_source_place,
+        parsec(:mutually_exclusive_completeness),
         ignore(parsec(:whitespace)),
         ignore(parsec(:comma))
       ]),
-      min: 0
+      min: 1
     )
     |> tag(:source_list)
 
@@ -92,10 +93,8 @@ defmodule Atomix.Invocation.Parser do
         parsec(:invocation),
         parsec(:constant_content),
         parsec(:mutually_exclusive_completeness),
-        # ?
-        parsec(:conditional_input),
-        ignore(parsec(:whitespace)),
-        ignore(parsec(:comma))
+        ignore(parsec(:comma)),
+        ignore(parsec(:whitespace))
       ]),
       min: 1
     )
@@ -170,19 +169,15 @@ defmodule Atomix.Invocation.Parser do
 
   mutually_exclusive_completeness =
     ignore(string("{"))
-    |> concat(source_list)
+    |> choice([
+      parsec(:source_list),
+      parsec(:destination_list),
+      times(parsec(:invocation), min: 1)
+    ])
     |> ignore(string("}"))
-    |> tag(:mutually_exclusive_completeness)
+    |> unwrap_and_tag(:mutually_exclusive_completeness)
 
   defparsec(:mutually_exclusive_completeness, mutually_exclusive_completeness)
-
-  conditional_input =
-    ignore(string("{"))
-    |> concat(destination_list)
-    |> ignore(string("}"))
-    |> tag(:conditional_input)
-
-  defparsec(:conditional_input, conditional_input)
 
   arbitration =
     ignore(string("{{"))
@@ -208,18 +203,33 @@ defmodule Atomix.Invocation.Parser do
 
   defparsec(:place_of_resolution, place_of_resolution)
 
-  defparsec(
-    :invocation,
+  invocation_with_return_to_place_of_invocation =
     invocation_name
     |> ignore(string("("))
-    |> times(choice([destination_list, parsec(:invocation)]), min: 1)
+    |> parsec(:source_place)
     |> ignore(string(")"))
-    |> optional(
-      ignore(string("("))
-      |> parsec(:source_list)
+    |> tag(:invocatioon)
+
+  defparsec(
+    :invocation_with_return_to_place_of_invocation,
+    invocation_with_return_to_place_of_invocation
+  )
+
+  defparsec(
+    :invocation,
+    choice([
+      parsec(:invocation_with_return_to_place_of_invocation),
+      invocation_name
+      |> ignore(string("("))
+      |> times(choice([destination_list, parsec(:invocation)]), min: 1)
       |> ignore(string(")"))
-    )
-    |> tag(:invocation)
+      |> optional(
+        ignore(string("("))
+        |> parsec(:source_list)
+        |> ignore(string(")"))
+      )
+      |> tag(:invocation)
+    ])
   )
 
   definition =
