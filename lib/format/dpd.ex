@@ -24,52 +24,42 @@ defmodule Atomix.Format.DPD do
   # Densely packed decimal
 
   def encode(0) do
-    Logger.info("Encoding 0")
     ~b(0)
   end
 
   def encode(1) do
-    Logger.info("Encoding 1")
     ~b(1)
   end
 
   def encode(2) do
-    Logger.info("Encoding 2")
     ~b(10)
   end
 
   def encode(3) do
-    Logger.info("Encoding 3")
     ~b(11)
   end
 
   def encode(4) do
-    Logger.info("Encoding 4")
     ~b(100)
   end
 
   def encode(5) do
-    Logger.info("Encoding 5")
     ~b(101)
   end
 
   def encode(6) do
-    Logger.info("Encoding 6")
     ~b(110)
   end
 
   def encode(7) do
-    Logger.info("Encoding 7")
     ~b(111)
   end
 
   def encode(8) do
-    Logger.info("Encoding 8")
     ~b(1000)
   end
 
   def encode(9) do
-    Logger.info("Encoding 9")
     ~b(1001)
   end
 

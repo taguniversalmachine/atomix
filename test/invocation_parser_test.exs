@@ -140,6 +140,38 @@ defmodule InvocationTest do
     assert destination_list_parens == [destination_list: [destination_place: {:name, "R"}]]
   end
 
+  test "1.3.2a Invocation List" do
+    invocation_list_str =
+      "SL(A<>) NOT(A<>) AND(A<> B<>) OR(A<> B<>) XOR(A<> B<>) ADD(A<> B<> carryin<>)"
+
+    {:ok, invocation_list, "", %{}, {1, 0}, _} = Parser.invocation_list(invocation_list_str)
+
+    assert invocation_list == [
+             invocatioon: [invocation_name: "SL", source_list: [source_place: [name: "A"]]],
+             invocatioon: [invocation_name: "NOT", source_list: [source_place: [name: "A"]]],
+             invocatioon: [
+               invocation_name: "AND",
+               source_list: [source_place: [name: "A"], source_place: [name: "B"]]
+             ],
+             invocatioon: [
+               invocation_name: "OR",
+               source_list: [source_place: [name: "A"], source_place: [name: "B"]]
+             ],
+             invocatioon: [
+               invocation_name: "XOR",
+               source_list: [source_place: [name: "A"], source_place: [name: "B"]]
+             ],
+             invocatioon: [
+               invocation_name: "ADD",
+               source_list: [
+                 source_place: [name: "A"],
+                 source_place: [name: "B"],
+                 source_place: [name: "carryin"]
+               ]
+             ]
+           ]
+  end
+
   test "12.12? Conditional invocation" do
     conditional_invocation_str = "$select()"
 
@@ -197,21 +229,22 @@ defmodule InvocationTest do
     {:ok, invocation_1, _, _, _, _} = Parser.invocation(invocation_str_1)
 
     assert invocation_1 == [
-             invocation: [
+             invocatioon: [
                invocation_name: "Arbiter",
-               destination_list: [
-                 mutually_exclusive_completeness:
-                   {:source_list,
-                    [
-                      mutually_exclusive_completeness:
-                        {:destination_list,
-                         [
-                           destination_place: {:name, "place1"},
-                           destination_place: {:name, "place2"}
-                         ]}
-                    ]}
-               ],
-               source_list: [source_place: [name: "next"]]
+               source_list: [
+                 mutually_exclusive_completeness: {
+                   :source_list,
+                   [
+                     mutually_exclusive_completeness: {
+                       :destination_list,
+                       [
+                         destination_place: {:name, "place1"},
+                         destination_place: {:name, "place2"}
+                       ]
+                     }
+                   ]
+                 }
+               ]
              ]
            ]
   end
@@ -819,22 +852,53 @@ defmodule InvocationTest do
   end
 
   # not sure about this yet but looks like it takes the source and
-  # returns the result to the place of invocaton
+  # returns the result to the place of invocation
   test "12.15aa Invocation with a single input and single output" do
     invocation_str = "SL(A<>)"
     {:ok, invocation, _, _, _, _} = Parser.invocation(invocation_str)
-    assert invocation == [invocatioon: [invocation_name: "SL", source_place: [name: "A"]]]
+
+    assert invocation == [
+             invocatioon: [invocation_name: "SL", source_list: [source_place: [name: "A"]]]
+           ]
   end
 
-  test "12.15a Mutually exclusive completeness with invocations" do
+  test "12.15b Mutually exclusive completeness with invocations" do
     completeness_str =
       "{SL(A<>) NOT(A<>) AND(A<> B<>) OR(A<> B<>) XOR(A<> B<>) ADD(A<> B<> carryin<>)}"
 
     {:ok, completeness, _, _, _, _} = Parser.mutually_exclusive_completeness(completeness_str)
-    assert completeness == "XXXX"
+
+    assert completeness == [
+             mutually_exclusive_completeness:
+               {:destination_list,
+                [
+                  invocatioon: [invocation_name: "SL", source_list: [source_place: [name: "A"]]],
+                  invocatioon: [invocation_name: "NOT", source_list: [source_place: [name: "A"]]],
+                  invocatioon: [
+                    invocation_name: "AND",
+                    source_list: [source_place: [name: "A"], source_place: [name: "B"]]
+                  ],
+                  invocatioon: [
+                    invocation_name: "OR",
+                    source_list: [source_place: [name: "A"], source_place: [name: "B"]]
+                  ],
+                  invocatioon: [
+                    invocation_name: "XOR",
+                    source_list: [source_place: [name: "A"], source_place: [name: "B"]]
+                  ],
+                  invocatioon: [
+                    invocation_name: "ADD",
+                    source_list: [
+                      source_place: [name: "A"],
+                      source_place: [name: "B"],
+                      source_place: [name: "carryin"]
+                    ]
+                  ]
+                ]}
+           ]
   end
 
-  test "12.15b Defintion of ALU with complex completeness relationships" do
+  test "12.15c Definition of ALU with complex completeness relationships" do
     invocation_str = "ALU(ADD, $A $B $carryin)(output<> carryout<>)"
     {:ok, alu_invocation, _, _, _, _} = Parser.invocation(invocation_str)
 
@@ -852,9 +916,93 @@ defmodule InvocationTest do
            ]
 
     definition_str =
-      "ALU[(command<> {SL(A<>) NOT(A<>) AND(A<> B<>) OR(A<> B<>) XOR(A<> B<>) ADD(A<> B<> carryin<>)}) ({SL($result) SR($result) NOT($result) OR($result) AND($result) XOR($result) ADD($result $carryout)}):]"
+      "ALU[(command<> {SL(A<>) NOT(A<>) AND(A<> B<>) OR(A<> B<>) XOR(A<> B<>) ADD(A<> B<> carryin<>)}) ({SL($result) SR($result) NOT($result) OR($result) AND($result) XOR($result) ADD($result $carryout)})$fake1$fake2():00[1]]"
 
     {:ok, alu_definition, _, _, _, _} = Parser.definition(definition_str)
-    assert alu_definition == "XX"
+
+    assert alu_definition == [
+             definition: [
+               definition_name: "ALU",
+               source_list: [
+                 source_place: [name: "command"],
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [
+                      invocatioon: [
+                        invocation_name: "SL",
+                        source_list: [source_place: [name: "A"]]
+                      ],
+                      invocatioon: [
+                        invocation_name: "NOT",
+                        source_list: [source_place: [name: "A"]]
+                      ],
+                      invocatioon: [
+                        invocation_name: "AND",
+                        source_list: [source_place: [name: "A"], source_place: [name: "B"]]
+                      ],
+                      invocatioon: [
+                        invocation_name: "OR",
+                        source_list: [source_place: [name: "A"], source_place: [name: "B"]]
+                      ],
+                      invocatioon: [
+                        invocation_name: "XOR",
+                        source_list: [source_place: [name: "A"], source_place: [name: "B"]]
+                      ],
+                      invocatioon: [
+                        invocation_name: "ADD",
+                        source_list: [
+                          source_place: [name: "A"],
+                          source_place: [name: "B"],
+                          source_place: [name: "carryin"]
+                        ]
+                      ]
+                    ]}
+               ],
+               destination_list: [
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [
+                      invocation: [
+                        invocation_name: "SL",
+                        destination_list: [destination_place: {:name, "result"}]
+                      ],
+                      invocation: [
+                        invocation_name: "SR",
+                        destination_list: [destination_place: {:name, "result"}]
+                      ],
+                      invocation: [
+                        invocation_name: "NOT",
+                        destination_list: [destination_place: {:name, "result"}]
+                      ],
+                      invocation: [
+                        invocation_name: "OR",
+                        destination_list: [destination_place: {:name, "result"}]
+                      ],
+                      invocation: [
+                        invocation_name: "AND",
+                        destination_list: [destination_place: {:name, "result"}]
+                      ],
+                      invocation: [
+                        invocation_name: "XOR",
+                        destination_list: [destination_place: {:name, "result"}]
+                      ],
+                      invocation: [
+                        invocation_name: "ADD",
+                        destination_list: [
+                          destination_place: {:name, "result"},
+                          destination_place: {:name, "carryout"}
+                        ]
+                      ]
+                    ]}
+               ],
+               conditional_invocation: [
+                 destination_place: {:name, "fake1"},
+                 destination_place: {:name, "fake2"}
+               ],
+               place_of_resolution: [
+                 constant_definitions: [constant_name: "00", constant_content: "1"]
+               ]
+             ]
+           ]
   end
 end

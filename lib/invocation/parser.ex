@@ -56,6 +56,14 @@ defmodule Atomix.Invocation.Parser do
 
   defparsec(:unnamed_empty_source_place, unnamed_empty_source_place)
 
+  test_list =
+    times(
+      choice([string("A"), string("B"), string("C"), ignore(string(" "))]),
+      min: 1
+    )
+
+  defparsec(:test_list, test_list)
+
   source_list =
     times(
       choice([
@@ -167,12 +175,15 @@ defmodule Atomix.Invocation.Parser do
     unnamed_source_place_with_conditional_invocation
   )
 
+  invocation_list = times(choice([parsec(:invocation), ignore(parsec(:whitespace))]), min: 1)
+  defparsec(:invocation_list, invocation_list)
+
   mutually_exclusive_completeness =
     ignore(string("{"))
     |> choice([
       parsec(:source_list),
       parsec(:destination_list),
-      times(parsec(:invocation), min: 1)
+      invocation_list
     ])
     |> ignore(string("}"))
     |> unwrap_and_tag(:mutually_exclusive_completeness)
@@ -206,7 +217,7 @@ defmodule Atomix.Invocation.Parser do
   invocation_with_return_to_place_of_invocation =
     invocation_name
     |> ignore(string("("))
-    |> parsec(:source_place)
+    |> parsec(:source_list)
     |> ignore(string(")"))
     |> tag(:invocatioon)
 
