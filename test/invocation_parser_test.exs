@@ -250,7 +250,7 @@ defmodule InvocationTest do
   end
 
   test "12.14b Arbitrated Places" do
-    definition_str_1 = "Arbiter[(placeB<>)($pass) pass<$placeB>:]"
+    definition_str_1 = "Arbiter[(placeB<>)($pass) pass<$placeB>:fake[fake]]"
     {:ok, definition_1, _, _, _, _} = Parser.definition(definition_str_1)
 
     assert definition_1 == [
@@ -259,7 +259,9 @@ defmodule InvocationTest do
                source_list: [source_place: [name: "placeB"]],
                destination_list: [destination_place: {:name, "pass"}],
                source_place: [name: "pass", content: [destination_place: {:name, "placeB"}]],
-               place_of_resolution: []
+               place_of_resolution: [
+                 {:constant_definitions, [constant_name: "fake", constant_content: "fake"]}
+               ]
              ]
            ]
   end
@@ -550,7 +552,7 @@ defmodule InvocationTest do
   end
 
   test "12.6 Fan-out steering" do
-    definition_str = "fanout[(select<>in<>)({$out1 $out2}) $select():A[out1<$in>] B[out2<$in>]]"
+    definition_str = "fanout[(select<>in<>)({$out1 $out2})$select():A[out1<$in>] B[out2<$in>]]"
 
     {:ok, definition, _, _, _, _} = Parser.definition(definition_str)
 
@@ -1001,6 +1003,43 @@ defmodule InvocationTest do
                ],
                place_of_resolution: [
                  constant_definitions: [constant_name: "00", constant_content: "1"]
+               ]
+             ]
+           ]
+  end
+
+  test "12.16 Example with occasional source place" do
+    invocation_str = "report($answer)(OK<> NO<>)"
+    {:ok, invocation, _, _, _, _} = Parser.invocation(invocation_str)
+
+    assert invocation == [
+             invocation: [
+               invocation_name: "report",
+               destination_list: [destination_place: {:name, "answer"}],
+               source_list: [source_place: [name: "OK"], source_place: [name: "NO"]]
+             ]
+           ]
+
+    definition_str = "report[(answer<>)({$YES $NO})$answer():yes[yes<yes>] no[NO<>]]"
+    {:ok, definition, _, _, _, _} = Parser.definition(definition_str)
+
+    assert definition == [
+             definition: [
+               definition_name: "report",
+               source_list: [source_place: [name: "answer"]],
+               destination_list: [
+                 mutually_exclusive_completeness:
+                   {:destination_list,
+                    [destination_place: {:name, "YES"}, destination_place: {:name, "NO"}]}
+               ],
+               conditional_invocation: [destination_place: {:name, "answer"}],
+               place_of_resolution: [
+                 constant_definitions: [
+                   constant_name: "yes",
+                   source_place: [name: "yes", content: [constant_content: "yes"]],
+                   constant_name: "no",
+                   source_place: [name: "NO"]
+                 ]
                ]
              ]
            ]

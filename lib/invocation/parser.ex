@@ -120,7 +120,7 @@ defmodule Atomix.Invocation.Parser do
   defparsec(:destination_list_parens, destination_list_parens)
 
   constant_content =
-    ascii_string([?0..?9, ?A..?Z], min: 1)
+    ascii_string([?0..?9, ?A..?Z, ?a..?z], min: 1)
     |> unwrap_and_tag(:constant_content)
 
   defparsec(:constant_content, constant_content)
@@ -132,13 +132,14 @@ defmodule Atomix.Invocation.Parser do
   constant_definition =
     constant_name
     |> ignore(string("["))
-    |> choice([parsec(:constant_content), parsec(:source_place)])
+    |> choice([parsec(:source_place), parsec(:constant_content)])
     |> ignore(string("]"))
+    |> optional(ignore(times(parsec(:whitespace), min: 1)))
 
   defparsec(:constant_definition, constant_definition)
 
   constant_definitions =
-    times(choice([parsec(:constant_definition), ignore(parsec(:whitespace))]), min: 1)
+    times(parsec(:constant_definition), min: 1)
     |> tag(:constant_definitions)
 
   defparsec(:constant_definitions, constant_definitions)
@@ -203,13 +204,12 @@ defmodule Atomix.Invocation.Parser do
 
   place_of_resolution =
     choice([
+      times(constant_definitions, min: 1),
       times(conditional_invocation, min: 1),
       times(parsec(:invocation), min: 1),
-      times(constant_definitions, min: 1),
-      unnamed_source_place,
-      ignore(parsec(:whitespace)),
-      empty()
+      unnamed_source_place
     ])
+    |> ignore(times(parsec(:whitespace), min: 0))
     |> tag(:place_of_resolution)
 
   defparsec(:place_of_resolution, place_of_resolution)
@@ -255,6 +255,7 @@ defmodule Atomix.Invocation.Parser do
       arbitration,
       unnamed_source_place_with_conditional_invocation
     ])
+    |> debug()
     |> ignore(string(":"))
     |> concat(place_of_resolution)
     |> ignore(string("]"))
